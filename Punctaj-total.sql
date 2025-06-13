@@ -1,0 +1,10 @@
+CREATE FUNCTION GET_PUNCTAJ_TOTAL(pilot_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+  DECLARE total INT;
+  SELECT SUM(Puncte) INTO total
+  FROM RezultatCursa
+  WHERE PilotID = pilot_id;
+  RETURN IFNULL(total, 0);
+END;
