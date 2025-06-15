@@ -24,7 +24,7 @@ public class CircuitDialog extends JDialog {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.add(new JLabel("Nume:"));
         panel.add(txtName);
-        panel.add(new JLabel("Locație:"));
+        panel.add(new JLabel("Tara:"));
         panel.add(txtLocation);
         panel.add(new JLabel("Lungime (km):"));
         panel.add(txtLength);
@@ -47,8 +47,8 @@ public class CircuitDialog extends JDialog {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 txtName.setText(rs.getString("Nume"));
-                txtLocation.setText(rs.getString("Locatie"));
-                txtLength.setText(Double.toString(rs.getDouble("Lungime")));
+                txtLocation.setText(rs.getString("Tara"));
+                txtLength.setText(Double.toString(rs.getDouble("LungimeKM")));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

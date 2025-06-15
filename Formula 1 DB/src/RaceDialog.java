@@ -44,12 +44,12 @@ public class RaceDialog extends JDialog {
     }
 
     private void loadRace() {
-        String sql = "SELECT Nume, DataCursa FROM Cursa WHERE CursaID=?";
+        String sql = "SELECT NumeCursa, DataCursa FROM Cursa WHERE CursaID=?";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setInt(1, raceId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                txtName.setText(rs.getString("Nume"));
+                txtName.setText(rs.getString("NumeCursa"));
                 txtDate.setText(rs.getDate("DataCursa").toString());
             }
         } catch (SQLException ex) {
@@ -75,14 +75,14 @@ public class RaceDialog extends JDialog {
 
         try {
             if (raceId == null) {
-                String sql = "INSERT INTO Cursa (Nume, DataCursa) VALUES (?, ?)";
+                String sql = "INSERT INTO Cursa (NumeCursa, DataCursa) VALUES (?, ?)";
                 try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
                     ps.setString(1, name);
                     ps.setDate(2, Date.valueOf(dateStr));
                     ps.executeUpdate();
                 }
             } else {
-                String sql = "UPDATE Cursa SET Nume=?, DataCursa=? WHERE CursaID=?";
+                String sql = "UPDATE Cursa SET NumeCursa=?, DataCursa=? WHERE CursaID=?";
                 try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
                     ps.setString(1, name);
                     ps.setDate(2, Date.valueOf(dateStr));
