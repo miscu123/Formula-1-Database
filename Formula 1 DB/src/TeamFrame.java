@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class TeamFrame extends JFrame {
     private JTable table;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, btnTotalPuncte;
     private Formula1DAO db;
 
     public TeamFrame(Formula1DAO db) {
@@ -18,11 +18,13 @@ public class TeamFrame extends JFrame {
         btnAdd = new JButton("Adaugă");
         btnEdit = new JButton("Editează");
         btnDelete = new JButton("Șterge");
+        btnTotalPuncte = new JButton("Vezi total puncte");
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
         btnPanel.add(btnEdit);
         btnPanel.add(btnDelete);
+        btnPanel.add(btnTotalPuncte);  // Adaugă butonul nou
 
         this.setLayout(new BorderLayout());
         this.add(scroll, BorderLayout.CENTER);
@@ -67,7 +69,10 @@ public class TeamFrame extends JFrame {
             }
         });
 
-        this.setSize(700, 400);
+        // Handler pentru butonul total puncte
+        btnTotalPuncte.addActionListener(e -> showTotalPuncte());
+
+        this.setSize(800, 450);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         refresh();
@@ -81,6 +86,25 @@ public class TeamFrame extends JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             table.setModel(new DefaultTableModel());
+        }
+    }
+
+    private void showTotalPuncte() {
+        try {
+            CallableStatement cs = db.getConnection().prepareCall("{CALL TOTAL_PUNCTE_PE_ECHIPA()}");
+            ResultSet rs = cs.executeQuery();
+
+            JTable puncteTable = new JTable(buildTableModel(rs));
+            JScrollPane scroll = new JScrollPane(puncteTable);
+            puncteTable.setFillsViewportHeight(true);
+
+            JOptionPane.showMessageDialog(this, scroll, "Total puncte pe echipă", JOptionPane.INFORMATION_MESSAGE);
+
+            rs.close();
+            cs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Eroare la încărcarea punctelor.");
         }
     }
 

@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class RaceFrame extends JFrame {
     private JTable table;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, btnTop3;
     private Formula1DAO db;
 
     public RaceFrame(Formula1DAO db) {
@@ -18,11 +18,13 @@ public class RaceFrame extends JFrame {
         btnAdd = new JButton("Adaugă");
         btnEdit = new JButton("Editează");
         btnDelete = new JButton("Șterge");
+        btnTop3 = new JButton("Top 3");
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
         btnPanel.add(btnEdit);
         btnPanel.add(btnDelete);
+        btnPanel.add(btnTop3);
 
         setLayout(new BorderLayout());
         add(scroll, BorderLayout.CENTER);
@@ -67,6 +69,8 @@ public class RaceFrame extends JFrame {
             }
         });
 
+        btnTop3.addActionListener(e -> showTop3Piloti());
+
         setSize(700, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -107,5 +111,37 @@ public class RaceFrame extends JFrame {
             model.addRow(rowData);
         }
         return model;
+    }
+
+    private void showTop3Piloti() {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int cursaId = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+            String sql = "{CALL CURSA_TOP3(?)}";
+
+            try (CallableStatement cs = db.getConnection().prepareCall(sql)) {
+                cs.setInt(1, cursaId);
+
+                boolean hasResults = cs.execute();
+
+                if (hasResults) {
+                    try (ResultSet rs = cs.getResultSet()) {
+                        if (rs.next()) { // doar un singur rând
+                            String top3 = rs.getString("Top3"); // citește coloana Top3
+                            JOptionPane.showMessageDialog(this, "Top 3 piloți pentru cursa selectată:\n" + top3);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Nu există rezultate pentru această cursă.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nu există rezultate pentru această cursă.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Eroare la obținerea topului.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selectează o cursă pentru a vedea top 3 piloți.");
+        }
     }
 }

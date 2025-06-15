@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.*;
-import java.time.LocalDate;
 
 public class PilotDialog extends JDialog {
     private JTextField txtNume, txtPrenume, txtNationalitate, txtDataN;
